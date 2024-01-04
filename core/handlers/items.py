@@ -1,16 +1,6 @@
 import pygame
 
-# начальные корды для персонажа
-hX = 460
-hY = 490
-
-# относительные смещения от левого верхнего угла прямоугольника героя
-hW = 75
-hH = 165
-
-# размеры спрайта героя
-dS = 175
-
+from core.data.constants import hX, hY, hW, hH
 
 # класс перса
 class Hero(pygame.sprite.Sprite):

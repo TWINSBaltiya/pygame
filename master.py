@@ -4,14 +4,12 @@
 import pygame
 
 from core.handlers.base import corners, load_image
-from core.handlers.items import Hero, hX, hY, dS
+from core.handlers.items import Hero
+from core.data.constants import hX, hY, dS, nT
 
 
 def main():
     pygame.init()
-
-    # 150 тактов за 0,15 c
-    nT = 150
 
     # получаем размер экрана
     screen_info = pygame.display.Info()
@@ -44,7 +42,7 @@ def main():
     hero.rect = hero.image.get_rect()
     # засовываем картинку героя в квадрат dSxdS (175х175)
     hero.image = pygame.transform.scale(hero_image, (dS, dS))
-    # начальные координаты левого верхнего угла прямоугольной области для персонажа.
+    # начальные координаты левого верхнего угла прямоугольной области для персонажа
     hero.rect.x, hero.rect.y = hX, hY
     all_sprites.add(hero)
 
