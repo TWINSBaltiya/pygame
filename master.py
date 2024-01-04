@@ -71,51 +71,32 @@ def main():
                 cords = event.pos
 
                 # проверка необходимости перевернуть героя
-                if hero.rect.x + hW < cords[0] and hero.is_rotate():
+                if hero.pivotX() < cords[0] and hero.is_rotate():
                     hero.image = pygame.transform.flip(hero.image, True, False)
                     hero.rotate()
-                if hero.rect.x + hW > cords[0] and not hero.is_rotate():
+                if hero.pivotX() > cords[0] and not hero.is_rotate():
                     hero.image = pygame.transform.flip(hero.image, True, False)
                     hero.rotate()
 
         # смотрим, является ли пиксель по цвету в ч\б фоне черным (равен 0), иначе ничего не делаем.
         if pixels[cords] == 0:
             # меняем корды героя, если хоть одна отличается от кордов клика
-            if (cords[0] != hero.rect.x + hW or cords[1] != hero.rect.y + hH):
+            if hero.needStep(cords):
                 x, y = 0, 0
 
                 # узнаем в каком направлении идти по x и y при fd = True (пиксела валидная, препятствие не обходим)
+                # пытаемся сделать шаг
                 if fd:
-                    # TODO: сделать функцию очередного смещения, возвращающую int, int (для установки x, y)
-                    if cords[0] > hero.rect.x + hW and pixels[hero.rect.x + hW + 1, hero.rect.y + hH] == 0:
-                       x = 1
-                    elif cords[0] < hero.rect.x + hW and pixels[hero.rect.x + hW - 1, hero.rect.y + hH] == 0:
-                       x = -1
-                    if cords[1] > hero.rect.y + hH and pixels[hero.rect.x + hW, hero.rect.y + hH + 1] == 0:
-                       y = 1
-                    elif cords[1] < hero.rect.y + hH and pixels[hero.rect.x + hW, hero.rect.y + hH - 1] == 0:
-                       y = -1
-                    hero.rect.x += x
-                    hero.rect.y += y
-                    print(cords, (hero.rect.x + hW, hero.rect.y + hH))
+                    x, y = hero.nextStep(cords, pixels)
 
                 # ВАЖНО! если после тика корды не поменялись, а мы всё равно прошли через верхнее условие,
                 # то наш перс стоит в тупике, ниже код обхода этого тупика
-                # TODO: сделать функцию обхода, возвращающую bool (для установки fd)
                 if x == 0 and y == 0:
-                    print(cords, (hero.rect.x + hW, hero.rect.y + hH))
-                    # в corners проверяем различные ситуации, когда ободить надо по разному
+                    # в corners проверяем различные ситуации, когда обходить надо по разному
                     if fd:
-                        dx, dy = corners((hero.rect.x + hW, hero.rect.y + hH), cords)
-                    # идем вниз или вверх до тех пор,
-                    # пока левый или правый пиксель (в зависимости от dx) не будет черный в ч\б фоне.
-                    # 0 - соответствует черному цвету.
-                    # ПРОВЕРИТЬ! судя по всему условие верно только один раз, иначе на второй раз dx, dy не определены!
-                    if pixels[hero.rect.x + hW + dx, hero.rect.y + hH] != 0:
-                        hero.rect.y += dy
-                        fd = False
-                    else:
-                        fd = True
+                        dx, dy = corners((hero.pivotX(), hero.pivotY()), cords)
+
+                    fd = hero.overcomeStep(pixels, dx, dy)
 
         all_sprites.draw(screen)
 
