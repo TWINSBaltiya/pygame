@@ -1,5 +1,16 @@
 import pygame
 
+# начальные корды для персонажа
+hX = 460
+hY = 490
+
+# относительные смещения от левого верхнего угла прямоугольника героя
+hW = 75
+hH = 165
+
+# размеры спрайта героя
+dS = 175
+
 
 # класс перса
 class Hero(pygame.sprite.Sprite):
@@ -7,8 +18,9 @@ class Hero(pygame.sprite.Sprite):
         super().__init__()
         self.cords = ()
         # его начальные корды
-        self.x = 460
-        self.y = 490
+        self.x = hX
+        self.y = hY
+        # маркер повернут или нет Hero
         self.f = False
 
     def __call__(self, screen, *args):
@@ -30,7 +42,7 @@ class Hero(pygame.sprite.Sprite):
     def get_cords(self):
         return self.cords
 
-
+# не используется
 class item:
     def __init__(self):
         self.cords = ()

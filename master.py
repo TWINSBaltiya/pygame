@@ -1,11 +1,17 @@
+# pygame - https://habr.com/ru/articles/588605/
+# работа со спрайтами - https://habr.com/ru/articles/588765/
+# шпаргалка - https://waksoft.susu.ru/2019/04/24/pygame-shpargalka-dlja-ispolzovanija/
 import pygame
 
 from core.handlers.base import corners, load_image
-from core.handlers.items import Hero
+from core.handlers.items import Hero, hX, hY, hW, hH, dS
 
 
 def main():
     pygame.init()
+
+    # 150 тактов за 0,15 c
+    nT = 150
 
     # получаем размер экрана
     screen_info = pygame.display.Info()
@@ -36,65 +42,87 @@ def main():
     hero_image = load_image("hero.jpg")
     hero.image = hero_image
     hero.rect = hero.image.get_rect()
-    hero.image = pygame.transform.scale(hero_image, (175, 175))
-    hero.rect.x, hero.rect.y = 460, 490
+    # засовываем картинку героя в квадрат dSxdS (175х175)
+    hero.image = pygame.transform.scale(hero_image, (dS, dS))
+    # начальные координаты левого верхнего угла прямоугольной области для персонажа.
+    hero.rect.x, hero.rect.y = hX, hY
     all_sprites.add(hero)
 
     all_sprites.draw(screen)
+    # fd = False - маркер того, что требуется обход препятствия (текущая пиксела не валидная)
     fd = True
-    cords = (460, 490)
+    # новые требуемые координаты героя совпадают с собственными координатами героя
+    cords = (hX, hY)
     running = True
     while running:
         for event in pygame.event.get():
+            # выход из программы при нажатии на крестик
             if event.type == pygame.QUIT:
                 running = False
+
+            # выход из программы по клавише Esc
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE:
+                    running = False
+
+            # проверка получения новых координат для героя
             if event.type == pygame.MOUSEBUTTONDOWN:
+                # новые требуемые координаты героя
                 cords = event.pos
-                if hero.rect.x + 75 < cords[0] and hero.is_rotate():
+
+                # проверка необходимости перевернуть героя
+                if hero.rect.x + hW < cords[0] and hero.is_rotate():
                     hero.image = pygame.transform.flip(hero.image, True, False)
                     hero.rotate()
-                if hero.rect.x + 75 > cords[0] and not hero.is_rotate():
+                if hero.rect.x + hW > cords[0] and not hero.is_rotate():
                     hero.image = pygame.transform.flip(hero.image, True, False)
                     hero.rotate()
 
-        # меняем корды героя если хоть 1 отличается от кордов клика,
-        # смотрим, является ли пиксель по цвету в ч\б фоне черным
-        if (cords[0] != hero.rect.x + 75 or cords[1] != hero.rect.y + 165) and pixels[cords] == 0:
-            x = 0
-            y = 0
-            # узнаем в каком направлении идти по x и y
-            if cords[0] > hero.rect.x + 75 and pixels[hero.rect.x + 75 + 1, hero.rect.y + 165] == 0 and fd:
-                x = 1
-            elif cords[0] < hero.rect.x + 75 and pixels[hero.rect.x + 75 - 1, hero.rect.y + 165] == 0 and fd:
-                x = -1
-            if cords[1] > hero.rect.y + 165 and pixels[hero.rect.x + 75, hero.rect.y + 166] == 0 and fd:
-                y = 1
-            elif cords[1] < hero.rect.y + 165 and pixels[hero.rect.x + 75, hero.rect.y + 165 - 1] == 0 and fd:
-                print(cords, (hero.rect.x + 75, hero.rect.y + 165))
-                y = -1
+        # смотрим, является ли пиксель по цвету в ч\б фоне черным (равен 0), иначе ничего не делаем.
+        if pixels[cords] == 0:
+            # меняем корды героя, если хоть одна отличается от кордов клика
+            if (cords[0] != hero.rect.x + hW or cords[1] != hero.rect.y + hH):
+                x, y = 0, 0
 
-            hero.rect.x += x
-            hero.rect.y += y
-
-            # ВАЖНО! если после тика корды не поменялись, а мы всё равно прошли через верхнее условие,
-            # то наш перс стоит в тупике, ниже код обхода этого тупика
-
-            if x == 0 and y == 0:
-                print(cords, (hero.rect.x + 75, hero.rect.y + 165))
-                # в corners проверяем различные ситуации, когда ободить надо по разному
+                # узнаем в каком направлении идти по x и y при fd = True (пиксела валидная, препятствие не обходим)
                 if fd:
-                    dx, dy = corners((hero.rect.x + 75, hero.rect.y + 165), cords)
-                # идем вниз или вверх до тех пор,
-                # пока левый или правый пиксель (в зависимости от dx) не будет черный в ч\б фоне
-                if pixels[hero.rect.x + 75 + dx, hero.rect.y + 165] != 0:
-                    hero.rect.y += 1
-                    fd = False
-                else:
-                    fd = True
+                    # TODO: сделать функцию очередного смещения, возвращающую int, int (для установки x, y)
+                    if cords[0] > hero.rect.x + hW and pixels[hero.rect.x + hW + 1, hero.rect.y + hH] == 0:
+                       x = 1
+                    elif cords[0] < hero.rect.x + hW and pixels[hero.rect.x + hW - 1, hero.rect.y + hH] == 0:
+                       x = -1
+                    if cords[1] > hero.rect.y + hH and pixels[hero.rect.x + hW, hero.rect.y + hH + 1] == 0:
+                       y = 1
+                    elif cords[1] < hero.rect.y + hH and pixels[hero.rect.x + hW, hero.rect.y + hH - 1] == 0:
+                       y = -1
+                    hero.rect.x += x
+                    hero.rect.y += y
+                    print(cords, (hero.rect.x + hW, hero.rect.y + hH))
+
+                # ВАЖНО! если после тика корды не поменялись, а мы всё равно прошли через верхнее условие,
+                # то наш перс стоит в тупике, ниже код обхода этого тупика
+                # TODO: сделать функцию обхода, возвращающую bool (для установки fd)
+                if x == 0 and y == 0:
+                    print(cords, (hero.rect.x + hW, hero.rect.y + hH))
+                    # в corners проверяем различные ситуации, когда ободить надо по разному
+                    if fd:
+                        dx, dy = corners((hero.rect.x + hW, hero.rect.y + hH), cords)
+                    # идем вниз или вверх до тех пор,
+                    # пока левый или правый пиксель (в зависимости от dx) не будет черный в ч\б фоне.
+                    # 0 - соответствует черному цвету.
+                    if pixels[hero.rect.x + hW + dx, hero.rect.y + hH] != 0:
+                        hero.rect.y += dy
+                        fd = False
+                    else:
+                        fd = True
+
         all_sprites.draw(screen)
 
-        clock.tick(150)
+        clock.tick(nT)
+
+        # Отображение новых изменений (перерисовка)
         pygame.display.flip()
+
     pygame.quit()
 
 
