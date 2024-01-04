@@ -4,7 +4,7 @@
 import pygame
 
 from core.handlers.base import corners, load_image
-from core.handlers.items import Hero, hX, hY, hW, hH, dS
+from core.handlers.items import Hero, hX, hY, dS
 
 
 def main():
