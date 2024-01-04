@@ -43,26 +43,35 @@ class Hero(pygame.sprite.Sprite):
         return self.cords
 
     def needStep(self, cords):
-        return cords[0] != self.rect.x + hW or cords[1] != self.rect.y + hH
+        return cords[0] != self.pivotX() or cords[1] != self.pivotY()
 
-    def nextStep(self, cords, pixels):
+    def setDiff(self, cords, pixels):
         sx, sy = 0, 0
-        if cords[0] > self.rect.x + hW and pixels[self.rect.x + hW + 1, self.rect.y + hH] == 0:
+
+        if cords[0] > self.pivotX() and pixels[self.pivotX() + 1, self.pivotY()] == 0:
             sx = 1
-        elif cords[0] < self.rect.x + hW and pixels[self.rect.x + hW - 1, self.rect.y + hH] == 0:
+        elif cords[0] < self.pivotX() and pixels[self.pivotX() - 1, self.pivotY()] == 0:
             sx = -1
-        if cords[1] > self.rect.y + hH and pixels[self.rect.x + hW, self.rect.y + hH + 1] == 0:
+        if cords[1] > self.pivotY() and pixels[self.pivotX(), self.pivotY() + 1] == 0:
             sy = 1
-        elif cords[1] < self.rect.y + hH and pixels[self.rect.x + hW, self.rect.y + hH - 1] == 0:
+        elif cords[1] < self.pivotY() and pixels[self.pivotX(), self.pivotY() - 1] == 0:
             sy = -1
+
+        return sx, sy
+
+    def setRect(self, sx, sy):
         self.rect.x += sx
         self.rect.y += sy
+
+    def nextStep(self, cords, pixels):
+        sx, sy = self.setDiff(cords, pixels)
+        self.setRect(sx, sy)
         return sx, sy
 
     # идем вниз или вверх до тех пор,
-    # пока левый или правый пиксель (в зависимости от dx) не будет черный в ч\б фоне.
-    # 0 - соответствует черному цвету.
-    # ПРОВЕРИТЬ! судя по всему условие верно только один раз, иначе на второй раз dx, dy не определены!
+    # пока левый или правый пиксель (в зависимости от dx) не будет черный в ч\б фоне (0 - черный).
+    # ПРОВЕРИТЬ! судя по всему этот код только для сглаженной функции!
+    # НЕ РАБОТАЕТ при обходе вверх!
     def overcomeStep(self, pixels, dx, dy):
         if pixels[self.pivotX() + dx, self.pivotY()] != 0:
             self.rect.y += dy
