@@ -64,7 +64,7 @@ class Hero(pygame.sprite.Sprite):
     def nextStep(self, cords, pixels):
         sx, sy = self.setDiff(cords, pixels)
         self.setRect(sx, sy)
-        return sx, sy
+        return (sx, sy) == (0, 0)
 
     # идем вниз или вверх до тех пор,
     # пока левый или правый пиксель (в зависимости от dx) не будет черный в ч\б фоне (0 - черный).
