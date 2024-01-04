@@ -42,6 +42,14 @@ class Hero(pygame.sprite.Sprite):
     def get_cords(self):
         return self.cords
 
+    def needRotate(self, cords):
+        if self.pivotX() < cords[0] and self.is_rotate():
+            self.image = pygame.transform.flip(self.image, True, False)
+            self.rotate()
+        if self.pivotX() > cords[0] and not self.is_rotate():
+            self.image = pygame.transform.flip(self.image, True, False)
+            self.rotate()
+
     def needStep(self, cords):
         return cords[0] != self.pivotX() or cords[1] != self.pivotY()
 

@@ -71,12 +71,7 @@ def main():
                 cords = event.pos
 
                 # проверка необходимости перевернуть героя
-                if hero.pivotX() < cords[0] and hero.is_rotate():
-                    hero.image = pygame.transform.flip(hero.image, True, False)
-                    hero.rotate()
-                if hero.pivotX() > cords[0] and not hero.is_rotate():
-                    hero.image = pygame.transform.flip(hero.image, True, False)
-                    hero.rotate()
+                hero.needRotate(cords)
 
         # смотрим, является ли пиксель по цвету в ч\б фоне черным (равен 0), иначе ничего не делаем.
         if pixels[cords] == 0:
