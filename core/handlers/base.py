@@ -142,3 +142,21 @@ def step_fix(pygame, screen, all_sprites, hero, cords, clock):
 
     # Отображение новых изменений (перерисовка)
     pygame.display.flip()
+
+def game(pygame):
+    # Конфигурация экрана
+    screen, pixels, all_sprites = screen_init(pygame)
+
+    # Получение всех героев в кортедже
+    hero = heros_init(pygame)
+
+    # Задание значений игровых переменных
+    isGame, isStep, isImpasse, clock, cords, dx, dy = game_init(screen, all_sprites, hero)
+
+    # Основной игровыой цикл
+    while isGame:
+        isGame, cords = event_handling(pygame.event.get(), cords)
+
+        isStep, isImpasse, dx, dy = step_handling(pixels, cords, hero, isStep, isImpasse, dx, dy)
+
+        step_fix(pygame, screen, all_sprites, hero, cords, clock)

@@ -83,8 +83,6 @@ class Hero(pygame.sprite.Sprite):
     def pivotY(self):
         return self.rect.y + hH
 
-
-
 # не используется
 class item:
     def __init__(self):

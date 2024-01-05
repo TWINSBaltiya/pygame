@@ -1,3 +1,6 @@
+# pygame - https://habr.com/ru/articles/588605/
+# работа со спрайтами - https://habr.com/ru/articles/588765/
+# шпаргалка - https://waksoft.susu.ru/2019/04/24/pygame-shpargalka-dlja-ispolzovanija/
 
 # начальные корды персонажа
 hX = 460
