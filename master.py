@@ -3,58 +3,27 @@
 # шпаргалка - https://waksoft.susu.ru/2019/04/24/pygame-shpargalka-dlja-ispolzovanija/
 import pygame
 
-from core.handlers.base import corners, load_image, event_handling
-from core.handlers.items import Hero
-from core.data.constants import hX, hY, dS, nT
+# Импорт спомогательных функций
+from core.handlers.base import corners, screen_init, heros_init, game_init, event_handling
+# Получение констант из конфигурации
+from core.data.constants import nT
 
 
 def main():
+
+    # Конфигурация игрового движка
     pygame.init()
 
-    # получаем размер экрана
-    screen_info = pygame.display.Info()
-    screen_w = screen_info.current_w
-    screen_h = screen_info.current_h
-    # растягиваем окно во весь экран
-    screen = pygame.display.set_mode((screen_w, screen_h), pygame.FULLSCREEN)
+    # Конфигурация экрана
+    screen, pixels, all_sprites = screen_init(pygame)
 
-    # устанавливаем название окна
-    pygame.display.set_caption('Game')
+    # Получение всех героев в кортедже
+    hero = heros_init(pygame)
 
-    # получаем и растягиваем картинку на весь экран
-    image1 = load_image("backround.jpg")
-    bg_image = pygame.transform.scale(image1, (screen_w, screen_h))
-    all_sprites = pygame.sprite.Group()
-    bg = pygame.sprite.Sprite(all_sprites)
-    bg.image = bg_image
-    bg.rect = bg.image.get_rect()
-    bg.rect.x, bg.rect.y = 0, 0
+    # Задание значений игровых переменных
+    running, isStep, clock, cords = game_init(screen, all_sprites, hero)
 
-    # растянутый задний фон в ч/б (границы ходьбы) преобразуем в PixelArray
-    image2 = load_image("wb_backround.jpg")
-    wb_bg_image = pygame.transform.scale(image2, (screen_w, screen_h))
-    pixels = pygame.PixelArray(wb_bg_image)
-
-    clock = pygame.time.Clock()
-
-    hero = Hero()
-    hero_image = load_image("hero.jpg")
-    hero.image = hero_image
-    hero.rect = hero.image.get_rect()
-    # засовываем картинку героя в квадрат dSxdS (175х175)
-    hero.image = pygame.transform.scale(hero_image, (dS, dS))
-    # начальные координаты левого верхнего угла прямоугольной области для персонажа
-    hero.rect.x, hero.rect.y = hX, hY
-
-    all_sprites.add(hero)
-    all_sprites.draw(screen)
-
-    # isStep = False - маркер приостаноки, т. е. требуется обход препятствия (текущая пиксела не валидная)
-    isStep = True
-    # новые требуемые координаты героя совпадают с собственными координатами героя
-    cords = (hX, hY)
-    running = True
-
+    # Основной игровыой цикл
     while running:
         running, cords = event_handling(pygame.event.get(), cords)
 
