@@ -5,7 +5,7 @@ import pygame
 # Импорт объектов-героев
 from core.handlers.items import Hero
 # Получение констант из конфигурации
-from core.data.constants import hX, hY, dS
+from core.data.constants import hX, hY, dS, nT
 
 
 def load_image(name):
@@ -106,3 +106,14 @@ def game_init(screen, all_sprites, hero):
     cords = (hX, hY)
     running = True
     return running, isStep, clock, cords
+
+def game_update(pygame, screen, all_sprites, hero, cords, clock):
+    # проверка необходимости перевернуть героя
+    hero.needRotate(cords)
+
+    all_sprites.draw(screen)
+
+    clock.tick(nT)
+
+    # Отображение новых изменений (перерисовка)
+    pygame.display.flip()

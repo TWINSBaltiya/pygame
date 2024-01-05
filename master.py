@@ -4,9 +4,7 @@
 import pygame
 
 # Импорт спомогательных функций
-from core.handlers.base import corners, screen_init, heros_init, game_init, event_handling
-# Получение констант из конфигурации
-from core.data.constants import nT
+from core.handlers.base import corners, screen_init, heros_init, game_init, event_handling, game_update
 
 
 def main():
@@ -47,15 +45,7 @@ def main():
                 # isStep = False - приостановка шага для обработки обхода
                 isStep = hero.overcomeStep(pixels, dx, dy)
 
-        # проверка необходимости перевернуть героя
-        hero.needRotate(cords)
-
-        all_sprites.draw(screen)
-
-        clock.tick(nT)
-
-        # Отображение новых изменений (перерисовка)
-        pygame.display.flip()
+        game_update(pygame, screen, all_sprites, hero, cords, clock)
 
     pygame.quit()
 
