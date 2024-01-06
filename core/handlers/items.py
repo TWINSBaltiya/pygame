@@ -43,13 +43,14 @@ class Hero(pygame.sprite.Sprite):
     def needStep(self, cords):
         return cords[0] != self.pivotX() or cords[1] != self.pivotY()
 
-    def setDiff(self, cords, pixels):
+    def __setDiff__(self, cords, pixels):
         sx, sy = 0, 0
 
         if cords[0] > self.pivotX() and pixels[self.pivotX() + 1, self.pivotY()] == 0:
             sx = 1
         elif cords[0] < self.pivotX() and pixels[self.pivotX() - 1, self.pivotY()] == 0:
             sx = -1
+
         if cords[1] > self.pivotY() and pixels[self.pivotX(), self.pivotY() + 1] == 0:
             sy = 1
         elif cords[1] < self.pivotY() and pixels[self.pivotX(), self.pivotY() - 1] == 0:
@@ -57,13 +58,13 @@ class Hero(pygame.sprite.Sprite):
 
         return sx, sy
 
-    def setRect(self, sx, sy):
+    def __setRect__(self, sx, sy):
         self.rect.x += sx
         self.rect.y += sy
 
     def nextStep(self, cords, pixels):
-        sx, sy = self.setDiff(cords, pixels)
-        self.setRect(sx, sy)
+        sx, sy = self.__setDiff__(cords, pixels)
+        self.__setRect__(sx, sy)
         return (sx, sy) == (0, 0)
 
     # идем вниз или вверх до тех пор,

@@ -76,22 +76,26 @@ def screen_init(pygame):
     pixels = pygame.PixelArray(wb_bg_image)
     return screen, pixels, all_sprites
 
-def heros_init(pygame):
-    # Здесь добавляются разные герои
+def __entity_fabric__(pygame, entity, sprite, size, coordinates):
+    entity_image = load_image(sprite)
+    entity.image = entity_image
+    entity.rect = entity.image.get_rect()
+    # засовываем картинку героя в квадрат dSxdS (175х175), где size - кортедж
+    entity.image = pygame.transform.scale(entity_image, size)
+    # начальные координаты левого верхнего угла прямоугольной области для персонажа, где coordinates - кортедж
+    entity.rect.x, entity.rect.y = coordinates
+    return entity
 
-    # Первый герой Hero
-    hero = Hero()
-    hero_image = load_image("hero.jpg")
-    hero.image = hero_image
-    hero.rect = hero.image.get_rect()
-    # засовываем картинку героя в квадрат dSxdS (175х175)
-    hero.image = pygame.transform.scale(hero_image, (dS, dS))
-    # начальные координаты левого верхнего угла прямоугольной области для персонажа
-    hero.rect.x, hero.rect.y = hX, hY
 
-    # Второй герой
+def entities_init(pygame):
+    # Здесь инициализируются требуемые сущности
 
-    # Возврать в кортедже всех героев
+    # Сущность Hero
+    hero = __entity_fabric__(pygame, Hero(), "hero.jpg", (dS, dS), (hX, hY))
+
+    # Сущность
+
+    # Возвратить в кортеже все инициализируемые сущности
     return hero
 
 def game_init(screen, all_sprites, hero):
@@ -147,8 +151,8 @@ def game(pygame):
     # Конфигурация экрана
     screen, pixels, all_sprites = screen_init(pygame)
 
-    # Получение всех героев в кортедже
-    hero = heros_init(pygame)
+    # Получить все сущности в кортеже
+    hero = entities_init(pygame)
 
     # Задание значений игровых переменных
     isGame, isStep, isImpasse, clock, cords, dx, dy = game_init(screen, all_sprites, hero)
