@@ -9,7 +9,7 @@ def main():
     # Конфигурация игрового движка
     pygame.init()
     # Игровой цикл
-    game(pygame)
+    game()
     # Выход из приложения
     pygame.quit()
 

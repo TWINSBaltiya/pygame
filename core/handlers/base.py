@@ -50,20 +50,27 @@ def event_handling(events, cords):
                 return True, event.pos
     return True, cords
 
-def screen_init(pygame):
+def __screen_setup__(name, mode):
     # получаем размер экрана
     screen_info = pygame.display.Info()
     screen_w = screen_info.current_w
     screen_h = screen_info.current_h
     # растягиваем окно во весь экран
-    screen = pygame.display.set_mode((screen_w, screen_h), pygame.FULLSCREEN)
+    screen = pygame.display.set_mode((screen_w, screen_h), mode)
 
     # устанавливаем название окна
-    pygame.display.set_caption('Game')
+    pygame.display.set_caption(name)
 
-    # получаем и растягиваем картинку на весь экран
+    return screen
+
+def screen_init():
+    # настройка экрана
+    screen = __screen_setup__('Game', pygame.FULLSCREEN)
+
+    # растянутый игровой фон помещаем в группу спрайтов для отрисовки
     image1 = load_image("backround.jpg")
-    bg_image = pygame.transform.scale(image1, (screen_w, screen_h))
+    bg_image = pygame.transform.scale(image1, screen.get_size())
+    # получение группы спрайтов для отрисовки
     all_sprites = pygame.sprite.Group()
     bg = pygame.sprite.Sprite(all_sprites)
     bg.image = bg_image
@@ -72,11 +79,13 @@ def screen_init(pygame):
 
     # растянутый задний фон в ч/б (границы ходьбы) преобразуем в PixelArray
     image2 = load_image("wb_backround.jpg")
-    wb_bg_image = pygame.transform.scale(image2, (screen_w, screen_h))
+    wb_bg_image = pygame.transform.scale(image2, screen.get_size())
+    # получение массива пикселей
     pixels = pygame.PixelArray(wb_bg_image)
+
     return screen, pixels, all_sprites
 
-def __entity_fabric__(pygame, entity, sprite, size, coordinates):
+def __entity_fabric__(entity, sprite, size, coordinates):
     entity_image = load_image(sprite)
     entity.image = entity_image
     entity.rect = entity.image.get_rect()
@@ -86,12 +95,11 @@ def __entity_fabric__(pygame, entity, sprite, size, coordinates):
     entity.rect.x, entity.rect.y = coordinates
     return entity
 
-
-def entities_init(pygame):
+def entities_init():
     # Здесь инициализируются требуемые сущности
 
     # Сущность Hero
-    hero = __entity_fabric__(pygame, Hero(), "hero.jpg", (dS, dS), (hX, hY))
+    hero = __entity_fabric__(Hero(), "hero.jpg", (dS, dS), (hX, hY))
 
     # Сущность
 
@@ -136,7 +144,7 @@ def step_handling(pixels, cords, hero, isStep, isImpasse, dx, dy):
             isStep = hero.overcomeStep(pixels, dx, dy)
     return isStep, isImpasse, dx, dy
 
-def step_fix(pygame, screen, all_sprites, hero, cords, clock):
+def step_fix(screen, all_sprites, hero, cords, clock):
     # проверка необходимости перевернуть героя
     hero.needRotate(cords)
 
@@ -147,12 +155,12 @@ def step_fix(pygame, screen, all_sprites, hero, cords, clock):
     # Отображение новых изменений (перерисовка)
     pygame.display.flip()
 
-def game(pygame):
+def game():
     # Конфигурация экрана
-    screen, pixels, all_sprites = screen_init(pygame)
+    screen, pixels, all_sprites = screen_init()
 
     # Получить все сущности в кортеже
-    hero = entities_init(pygame)
+    hero = entities_init()
 
     # Задание значений игровых переменных
     isGame, isStep, isImpasse, clock, cords, dx, dy = game_init(screen, all_sprites, hero)
@@ -163,4 +171,4 @@ def game(pygame):
 
         isStep, isImpasse, dx, dy = step_handling(pixels, cords, hero, isStep, isImpasse, dx, dy)
 
-        step_fix(pygame, screen, all_sprites, hero, cords, clock)
+        step_fix(screen, all_sprites, hero, cords, clock)
