@@ -63,23 +63,26 @@ def __screen_setup__(name, mode):
 
     return screen
 
+def __get_bg_image__(file, size):
+    return pygame.transform.scale(load_image(file), size)
+
 def screen_init():
+    # получение группы спрайтов для отрисовки
+    all_sprites = pygame.sprite.Group()
+    sprite = pygame.sprite.Sprite(all_sprites)
+
     # настройка экрана
     screen = __screen_setup__('Game', pygame.FULLSCREEN)
 
     # растянутый игровой фон помещаем в группу спрайтов для отрисовки
-    image1 = load_image("backround.jpg")
-    bg_image = pygame.transform.scale(image1, screen.get_size())
-    # получение группы спрайтов для отрисовки
-    all_sprites = pygame.sprite.Group()
-    bg = pygame.sprite.Sprite(all_sprites)
-    bg.image = bg_image
-    bg.rect = bg.image.get_rect()
-    bg.rect.x, bg.rect.y = 0, 0
+    bg_image = __get_bg_image__("backround.jpg", screen.get_size())
+    # настройка бэкграунда (фона)
+    sprite.image = bg_image
+    sprite.rect = sprite.image.get_rect()
+    sprite.rect.x, sprite.rect.y = 0, 0
 
     # растянутый задний фон в ч/б (границы ходьбы) преобразуем в PixelArray
-    image2 = load_image("wb_backround.jpg")
-    wb_bg_image = pygame.transform.scale(image2, screen.get_size())
+    wb_bg_image =  __get_bg_image__("wb_backround.jpg", screen.get_size())
     # получение массива пикселей
     pixels = pygame.PixelArray(wb_bg_image)
 
